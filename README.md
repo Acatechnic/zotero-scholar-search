@@ -6,6 +6,8 @@ result in the browser of your choice.
 
 A tiny, dependency-free Zotero 7 / 9 plugin.
 
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/acatechnic)
+
 > **Platform:** macOS only. The browser handoff uses AppleScript / `open`, which
 > is macOS-specific. On other platforms searches fall back to opening in your
 > system default browser.
@@ -68,6 +70,12 @@ The plugin has no build step — an `.xpi` is just a zip of the source files:
 ```
 
 This produces `scholar-search.xpi` in the project root.
+
+## Support
+
+This plugin is free and open source. If it's useful to you and you'd like to
+support its development, you can [**buy me a coffee ☕**](https://buymeacoffee.com/acatechnic).
+Entirely optional — bug reports and PRs are just as welcome.
 
 ## License
 
