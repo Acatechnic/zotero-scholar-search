@@ -30,21 +30,21 @@
   <groupbox>
     <label><html:h2>Browser</html:h2></label>
     <description>
-      Open searches in this browser. &quot;System default&quot; uses your macOS
-      default browser; any other choice overrides it. If the chosen browser is
-      not installed, the system default is used instead.
+      Open searches in this browser. &quot;System default&quot; uses your
+      operating system's default browser; any other choice overrides it. If the
+      chosen browser isn't installed, the system default is used instead.
     </description>
     <hbox align="center">
       <label value="Open searches in:" control="ss-browser"/>
       <menulist id="ss-browser" native="true">
         <menupopup>
           <menuitem value="" label="System default"/>
-          <menuitem value="Google Chrome" label="Google Chrome"/>
-          <menuitem value="Safari" label="Safari"/>
-          <menuitem value="Firefox" label="Firefox"/>
-          <menuitem value="Microsoft Edge" label="Microsoft Edge"/>
-          <menuitem value="Brave Browser" label="Brave"/>
-          <menuitem value="Arc" label="Arc"/>
+          <menuitem value="chrome" label="Google Chrome"/>
+          <menuitem value="safari" label="Safari (macOS only)"/>
+          <menuitem value="firefox" label="Firefox"/>
+          <menuitem value="edge" label="Microsoft Edge"/>
+          <menuitem value="brave" label="Brave"/>
+          <menuitem value="arc" label="Arc"/>
         </menupopup>
       </menulist>
     </hbox>

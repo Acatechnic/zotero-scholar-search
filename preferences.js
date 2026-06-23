@@ -42,6 +42,22 @@
     } catch (e) {}
   }
 
+  // Browser pref values are keys (chrome/safari/…); v2.0–2.1 stored macOS app
+  // names. Map any legacy value to its key so the dropdown shows it correctly.
+  var BROWSER_KEYS = { "": 1, chrome: 1, safari: 1, firefox: 1, edge: 1, brave: 1, arc: 1 };
+  var LEGACY_BROWSER = {
+    "Google Chrome": "chrome",
+    "Safari": "safari",
+    "Firefox": "firefox",
+    "Microsoft Edge": "edge",
+    "Brave Browser": "brave",
+    "Arc": "arc",
+  };
+  function normalizeBrowser(v) {
+    if (BROWSER_KEYS[v]) return v;
+    return LEGACY_BROWSER[v] || "";
+  }
+
   // ---- custom engines -----------------------------------------------------
 
   function loadCustom() {
@@ -136,7 +152,10 @@
     if (!bsel) {
       ready = false;
     } else if (!bsel._ssWired) {
-      bsel.value = getPref("browser", "");
+      var bv = normalizeBrowser(getPref("browser", ""));
+      // Persist the normalized key so legacy app-name values are migrated once.
+      if (bv !== getPref("browser", "")) setPref("browser", bv);
+      bsel.value = bv;
       bsel.addEventListener("command", function () {
         setPref("browser", bsel.value);
       });

@@ -4,13 +4,14 @@ Right-click selected text in the Zotero PDF reader to search **Google Scholar**,
 **Google**, **PubMed** — or any **custom search engine** you add — and open the
 result in the browser of your choice.
 
-A tiny, dependency-free Zotero 7 / 9 plugin.
+A tiny, dependency-free Zotero 7 / 9 plugin for **macOS, Windows and Linux**.
 
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/acatechnic)
 
-> **Platform:** macOS only. The browser handoff uses AppleScript / `open`, which
-> is macOS-specific. On other platforms searches fall back to opening in your
-> system default browser.
+> **Browser choice is cross-platform.** Searches open in your selected browser on
+> macOS, Windows and Linux. If the chosen browser isn't found, the search opens
+> in your system default browser instead — so searching always works. (Safari is
+> macOS-only; Arc is macOS/Windows.)
 
 ## Features
 
@@ -22,8 +23,8 @@ A tiny, dependency-free Zotero 7 / 9 plugin.
 - **Custom engines.** Add any site that supports a search URL — put `{q}` where
   the selected text should go (e.g. `https://www.semanticscholar.org/search?q={q}`).
 - **Choose your browser.** Open searches in Google Chrome, Safari, Firefox,
-  Edge, Brave, Arc, or your system default — overriding the OS default the same
-  way the original Chrome-only version did.
+  Edge, Brave, Arc, or your system default — overriding the OS default, on
+  macOS, Windows and Linux alike.
 
 ## Install
 

@@ -15,9 +15,10 @@
 // Selected text lives in:
 //   reader._state.primaryViewSelectionPopup.annotation.text
 //
-// The bootstrap sandbox has no Services import, no setTimeout and no
-// console.log – none of those exist here. (The preferences pane, which runs in
-// a real window, does have them; see preferences.js.)
+// The bootstrap sandbox has no setTimeout and no console.log – neither exists
+// here. (The preferences pane, which runs in a real window, does; see
+// preferences.js.) ChromeUtils IS available, used to lazily load Subprocess for
+// launching a specific browser cross-platform.
 
 var PLUGIN_ID = "scholar-search@acatechnic";
 var PREF_BRANCH = "extensions.scholar-search.";
@@ -208,37 +209,211 @@ function _buildSearchUrl(engine, text) {
 }
 
 // ---------------------------------------------------------------------------
-// Open URL in the chosen browser (macOS)
+// Open URL in the chosen browser (macOS / Windows / Linux)
 // ---------------------------------------------------------------------------
 
-// Opens `url` in the browser named by the `browser` pref (e.g. "Google
-// Chrome"). An empty pref means the macOS default browser. If the chosen
-// browser is not installed, it falls back to the default browser.
-//
-// Uses Zotero.Utilities.Internal.executeAppleScript() – Zotero's own osascript
-// wrapper. `quoted form of` makes the shell command injection-safe; the URL is
-// already encodeURIComponent-encoded and the browser name comes from a fixed
-// catalog, so neither can contain a " or \ to break the AppleScript literal.
-function _openUrl(url) {
-  var browser = getPref("browser", "");
-  var script;
+// How to launch each browser on each platform.
+//   mac   – application name passed to `open -a`
+//   win   – candidate executable paths (%ENV% vars are expanded; the first one
+//           that launches wins). cmd.exe is deliberately avoided so URL query
+//           strings can't be reinterpreted by the shell.
+//   linux – candidate command names resolved against PATH.
+// A missing platform entry means "not available there" → falls back to the
+// system default browser.
+var BROWSERS = {
+  chrome: {
+    mac: "Google Chrome",
+    win: [
+      "%ProgramFiles%\\Google\\Chrome\\Application\\chrome.exe",
+      "%ProgramFiles(x86)%\\Google\\Chrome\\Application\\chrome.exe",
+      "%LocalAppData%\\Google\\Chrome\\Application\\chrome.exe",
+    ],
+    linux: ["google-chrome-stable", "google-chrome", "chromium", "chromium-browser"],
+  },
+  safari: { mac: "Safari" }, // macOS only
+  firefox: {
+    mac: "Firefox",
+    win: [
+      "%ProgramFiles%\\Mozilla Firefox\\firefox.exe",
+      "%ProgramFiles(x86)%\\Mozilla Firefox\\firefox.exe",
+    ],
+    linux: ["firefox", "firefox-esr"],
+  },
+  edge: {
+    mac: "Microsoft Edge",
+    win: [
+      "%ProgramFiles(x86)%\\Microsoft\\Edge\\Application\\msedge.exe",
+      "%ProgramFiles%\\Microsoft\\Edge\\Application\\msedge.exe",
+    ],
+    linux: ["microsoft-edge-stable", "microsoft-edge"],
+  },
+  brave: {
+    mac: "Brave Browser",
+    win: [
+      "%ProgramFiles%\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
+      "%ProgramFiles(x86)%\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
+      "%LocalAppData%\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
+    ],
+    linux: ["brave-browser", "brave", "brave-browser-stable"],
+  },
+  arc: {
+    mac: "Arc",
+    win: [
+      "%LocalAppData%\\Microsoft\\WindowsApps\\Arc.exe",
+      "%LocalAppData%\\Arc\\app\\Arc.exe",
+    ],
+  },
+};
 
-  if (browser) {
-    script = [
-      'try',
-      '  do shell script "open -a " & quoted form of "' + browser + '" & " " & quoted form of "' + url + '"',
-      'on error',
-      '  do shell script "open " & quoted form of "' + url + '"', // fall back to macOS default
-      'end try',
-    ].join("\n");
-  } else {
-    script = 'do shell script "open " & quoted form of "' + url + '"';
-  }
+// Map the browser names used by v2.0/2.1 (macOS app names) to the new keys, so
+// an existing setting keeps working after upgrade.
+var LEGACY_BROWSER = {
+  "Google Chrome": "chrome",
+  "Safari": "safari",
+  "Firefox": "firefox",
+  "Microsoft Edge": "edge",
+  "Brave Browser": "brave",
+  "Arc": "arc",
+};
 
+// Lazily imported Subprocess module. undefined = not tried, null = unavailable.
+var _subprocess = undefined;
+function _getSubprocess() {
+  if (_subprocess !== undefined) return _subprocess;
+  _subprocess = null;
   try {
-    Zotero.Utilities.Internal.executeAppleScript(script, /* block= */ false);
+    _subprocess = ChromeUtils.importESModule(
+      "resource://gre/modules/Subprocess.sys.mjs"
+    ).Subprocess;
   } catch (e) {
-    // executeAppleScript unavailable (e.g. non-macOS) – last resort.
-    try { Zotero.launchURL(url); } catch (e2) {}
+    try {
+      _subprocess = ChromeUtils.import(
+        "resource://gre/modules/Subprocess.jsm"
+      ).Subprocess;
+    } catch (e2) {
+      _subprocess = null;
+    }
   }
+  return _subprocess;
+}
+
+// Resolve the configured browser to a known key, accepting the legacy macOS
+// app-name values. "" means "system default browser".
+function _browserKey() {
+  var v = getPref("browser", "");
+  if (!v) return "";
+  if (BROWSERS[v]) return v;
+  if (LEGACY_BROWSER[v]) return LEGACY_BROWSER[v];
+  return "";
+}
+
+// Open `url`. With no browser configured (or on any failure) it uses the system
+// default browser; otherwise it launches the chosen browser for this platform.
+// The URL is already encodeURIComponent-encoded and is passed as a single
+// process argument (never through a shell), so it can't be misinterpreted.
+function _openUrl(url) {
+  var key = _browserKey();
+  if (!key) { _launchDefault(url); return; }
+  Promise.resolve()
+    .then(function () { return _launchInBrowser(key, url); })
+    .catch(function () { _launchDefault(url); });
+}
+
+function _launchDefault(url) {
+  try { Zotero.launchURL(url); } catch (e) {}
+}
+
+function _launchInBrowser(key, url) {
+  var spec = BROWSERS[key];
+  if (!spec) return Promise.reject();
+  var SP = _getSubprocess();
+
+  if (Zotero.isMac) {
+    if (SP && spec.mac) {
+      return SP.call({ command: "/usr/bin/open", arguments: ["-a", spec.mac, url] });
+    }
+    // No Subprocess – fall back to Zotero's AppleScript wrapper.
+    return _openMacAppleScript(spec.mac, url);
+  }
+
+  if (!SP) return Promise.reject();
+
+  if (Zotero.isWin) {
+    var env = _winEnv(SP);
+    var paths = (spec.win || [])
+      .map(function (p) { return _expandEnv(p, env); })
+      .filter(function (p) { return p && p.indexOf("%") === -1; });
+    return _tryPaths(SP, paths, url);
+  }
+
+  if (Zotero.isLinux) {
+    return _tryLinuxNames(SP, spec.linux || [], url);
+  }
+
+  return Promise.reject();
+}
+
+// Try each Windows executable path in turn; resolve on the first that launches.
+function _tryPaths(SP, paths, url) {
+  var i = 0;
+  function next() {
+    if (i >= paths.length) return Promise.reject();
+    var p = paths[i++];
+    return SP.call({ command: p, arguments: [url] }).catch(next);
+  }
+  return next();
+}
+
+// Resolve each Linux command name against PATH and launch the first that works.
+function _tryLinuxNames(SP, names, url) {
+  var i = 0;
+  function next() {
+    if (i >= names.length) return Promise.reject();
+    var name = names[i++];
+    return Promise.resolve()
+      .then(function () { return SP.pathSearch(name); })
+      .then(function (exe) {
+        if (!exe) return next();
+        return SP.call({ command: exe, arguments: [url] });
+      })
+      .catch(next);
+  }
+  return next();
+}
+
+// Build a case-insensitive (upper-cased keys) copy of the process environment.
+function _winEnv(SP) {
+  var out = {};
+  try {
+    var raw = SP.getEnvironment();
+    for (var k in raw) out[k.toUpperCase()] = raw[k];
+  } catch (e) {}
+  return out;
+}
+
+function _expandEnv(path, env) {
+  return path.replace(/%([^%]+)%/g, function (_m, name) {
+    return env[name.toUpperCase()] || "";
+  });
+}
+
+// macOS fallback when Subprocess can't be loaded: Zotero's own osascript
+// wrapper. `quoted form of` is shell-safe; the URL has no " or \, and the app
+// name comes from the fixed catalog.
+function _openMacAppleScript(appName, url) {
+  return new Promise(function (resolve, reject) {
+    try {
+      var script = [
+        'try',
+        '  do shell script "open -a " & quoted form of "' + appName + '" & " " & quoted form of "' + url + '"',
+        'on error',
+        '  do shell script "open " & quoted form of "' + url + '"',
+        'end try',
+      ].join("\n");
+      Zotero.Utilities.Internal.executeAppleScript(script, /* block= */ false);
+      resolve();
+    } catch (e) {
+      reject(e);
+    }
+  });
 }

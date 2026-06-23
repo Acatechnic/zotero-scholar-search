@@ -2,6 +2,19 @@
 
 All notable changes to this project are documented here.
 
+## [2.2.0] — 2026-06-23
+
+### Added
+- **Windows and Linux support for browser choice.** Picking a specific browser
+  (Chrome, Firefox, Edge, Brave, Arc) now works on all three platforms, not just
+  macOS, by launching the browser directly via Zotero's subprocess API. If the
+  chosen browser isn't found, the search falls back to the system default
+  browser, so searching always works. (Safari remains macOS-only.)
+
+### Changed
+- The browser setting is stored as a stable key (e.g. `chrome`) instead of a
+  macOS app name. Existing settings are migrated automatically.
+
 ## [2.1.0] — 2026-06-23
 
 ### Added
