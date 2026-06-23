@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "name": "Scholar Search",
+  "version": "2.0.0",
+  "description": "Right-click selected text in the Zotero PDF reader to search Google Scholar, Web of Science, Google or PubMed — in the browser of your choice.",
+  "author": "Acatechnic",
+  "homepage_url": "https://github.com/Acatechnic/zotero-scholar-search",
+  "icons": {
+    "48": "icons/icon.svg",
+    "96": "icons/icon.svg"
+  },
+  "applications": {
+    "zotero": {
+      "id": "scholar-search@acatechnic",
+      "update_url": "https://raw.githubusercontent.com/Acatechnic/zotero-scholar-search/main/update.json",
+      "strict_min_version": "7.0",
+      "strict_max_version": "9.*"
+    }
+  }
+}

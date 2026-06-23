@@ -1,0 +1,40 @@
+<vbox
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+
+  <groupbox>
+    <label><html:h2>Search engines</html:h2></label>
+    <description>
+      Choose which search engines appear when you right-click selected text in
+      the PDF reader. One menu item is shown per enabled engine.
+    </description>
+    <checkbox id="ss-engine-scholar" native="true" label="Google Scholar"/>
+    <checkbox id="ss-engine-wos" native="true" label="Web of Science"/>
+    <checkbox id="ss-engine-google" native="true" label="Google"/>
+    <checkbox id="ss-engine-pubmed" native="true" label="PubMed"/>
+  </groupbox>
+
+  <groupbox>
+    <label><html:h2>Browser</html:h2></label>
+    <description>
+      Open searches in this browser. &quot;System default&quot; uses your macOS
+      default browser; any other choice overrides it. If the chosen browser is
+      not installed, the system default is used instead.
+    </description>
+    <hbox align="center">
+      <label value="Open searches in:" control="ss-browser"/>
+      <menulist id="ss-browser" native="true">
+        <menupopup>
+          <menuitem value="" label="System default"/>
+          <menuitem value="Google Chrome" label="Google Chrome"/>
+          <menuitem value="Safari" label="Safari"/>
+          <menuitem value="Firefox" label="Firefox"/>
+          <menuitem value="Microsoft Edge" label="Microsoft Edge"/>
+          <menuitem value="Brave Browser" label="Brave"/>
+          <menuitem value="Arc" label="Arc"/>
+        </menupopup>
+      </menulist>
+    </hbox>
+  </groupbox>
+
+</vbox>

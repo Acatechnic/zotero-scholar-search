@@ -1,0 +1,9 @@
+# Build output
+*.xpi
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/

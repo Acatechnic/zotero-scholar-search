@@ -1,0 +1,31 @@
+# Changelog
+
+All notable changes to this project are documented here.
+
+## [2.0.0] — 2026-06-23
+
+First public release.
+
+### Added
+- **Settings pane** (Zotero **Settings → Scholar Search**) for configuring the
+  plugin without editing code.
+- **Multiple search engines.** Google Scholar (on by default), Web of Science,
+  Google and PubMed can each be enabled independently; one right-click menu
+  item is shown per enabled engine.
+- **Browser selector.** Open searches in Google Chrome, Safari, Firefox, Edge,
+  Brave, Arc, or the system default. The chosen browser overrides the OS
+  default; if it isn't installed, the system default is used.
+- Advanced per-engine URL override via the hidden pref
+  `extensions.scholar-search.url.<key>`.
+- GitHub-hosted auto-update manifest, icon, build script, README, LICENSE.
+
+### Changed
+- Browser handoff now uses `open -a` (via AppleScript) so it works for any
+  browser, not just Chrome, while keeping the "fall back to the default
+  browser" behaviour.
+- Plugin id is now `scholar-search@acatechnic` (was `scholar-search@local`).
+  Existing local installs should be removed and replaced once.
+
+### Prior history
+- 1.x — private builds: single "Search Google Scholar" reader menu item that
+  always opened in Chrome (falling back to the default browser).

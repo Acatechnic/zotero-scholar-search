@@ -1,0 +1,19 @@
+{
+  "addons": {
+    "scholar-search@acatechnic": {
+      "updates": [
+        {
+          "version": "2.0.0",
+          "update_link": "https://github.com/Acatechnic/zotero-scholar-search/releases/download/v2.0.0/scholar-search.xpi",
+          "update_hash": "sha512:fede51730a4c1d53962d29ebb9f3b9bdd5f984373f1eef954dc4b1ef87b239bae3009332ad912a4cad8369c3d3291b11dfdfa3c30dd4e0be3cf3b2bc48be4b57",
+          "applications": {
+            "zotero": {
+              "strict_min_version": "7.0",
+              "strict_max_version": "9.*"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
