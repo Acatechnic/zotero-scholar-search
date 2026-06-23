@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented here.
 
+## [2.1.0] — 2026-06-23
+
+### Added
+- **Custom search engines.** Add your own engines in Settings (name + a URL
+  template containing `{q}`). Each appears as its own right-click menu item.
+  Add or remove as many as you like.
+
+### Removed
+- **Web of Science built-in.** It's a session-based web app with no public
+  query URL, so the link only ever opened an empty page. Add it as a custom
+  engine if your institution provides a working search URL.
+
 ## [2.0.0] — 2026-06-23
 
 First public release.

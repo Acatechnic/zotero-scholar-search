@@ -9,9 +9,22 @@
       the PDF reader. One menu item is shown per enabled engine.
     </description>
     <checkbox id="ss-engine-scholar" native="true" label="Google Scholar"/>
-    <checkbox id="ss-engine-wos" native="true" label="Web of Science"/>
     <checkbox id="ss-engine-google" native="true" label="Google"/>
     <checkbox id="ss-engine-pubmed" native="true" label="PubMed"/>
+  </groupbox>
+
+  <groupbox>
+    <label><html:h2>Custom search engines</html:h2></label>
+    <description>
+      Add your own search engines. Put &lt;b&gt;{q}&lt;/b&gt; in the URL where
+      the selected text should go — for example
+      https://www.semanticscholar.org/search?q={q}. Each one appears in the
+      right-click menu.
+    </description>
+    <vbox id="ss-custom-list"/>
+    <hbox>
+      <button id="ss-custom-add" native="true" label="Add custom engine"/>
+    </hbox>
   </groupbox>
 
   <groupbox>

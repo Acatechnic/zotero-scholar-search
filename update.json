@@ -3,9 +3,9 @@
     "scholar-search@acatechnic": {
       "updates": [
         {
-          "version": "2.0.0",
-          "update_link": "https://github.com/Acatechnic/zotero-scholar-search/releases/download/v2.0.0/scholar-search.xpi",
-          "update_hash": "sha512:fede51730a4c1d53962d29ebb9f3b9bdd5f984373f1eef954dc4b1ef87b239bae3009332ad912a4cad8369c3d3291b11dfdfa3c30dd4e0be3cf3b2bc48be4b57",
+          "version": "2.1.0",
+          "update_link": "https://github.com/Acatechnic/zotero-scholar-search/releases/download/v2.1.0/scholar-search.xpi",
+          "update_hash": "sha512:ad6c6f3940f16675f9b75e74d9ffbd37c7b119567495c816e9c92584a0f06f123e0e072721b7ca50774baa05c5ab9a154c7639f85fb0248c8818780ee2ac6542",
           "applications": {
             "zotero": {
               "strict_min_version": "7.0",

@@ -34,14 +34,6 @@ var ENGINES = [
     defaultOn: true,
   },
   {
-    key: "wos",
-    label: "Web of Science",
-    // Best-effort general search. Web of Science is a session-based app and may
-    // simply open its search page rather than pre-filling the query.
-    url: "https://www.webofscience.com/wos/woscc/summary/?q={q}&search_mode=GeneralSearch",
-    defaultOn: false,
-  },
-  {
     key: "google",
     label: "Google",
     url: "https://www.google.com/search?q={q}",
@@ -54,6 +46,11 @@ var ENGINES = [
     defaultOn: false,
   },
 ];
+
+// User-defined engines are stored as a JSON array of {label, url} in the pref
+// `extensions.scholar-search.custom`. Each url is a {q} template, just like the
+// built-ins. This is how sites without a built-in entry (e.g. Web of Science,
+// if your institution exposes a working query URL) are added.
 
 var ScholarSearch = { rootURI: null, prefPaneID: null };
 
@@ -172,16 +169,37 @@ function _init() {
   } catch (e) {}
 }
 
-// Engines the user has switched on, in catalog order. Falls back to Google
-// Scholar if every engine has been disabled, so the menu is never empty.
+// Engines shown in the menu: enabled built-ins (in catalog order) followed by
+// the user's custom engines. Falls back to Google Scholar if nothing is
+// enabled, so the menu is never empty.
 function _enabledEngines() {
   var on = ENGINES.filter(function (e) {
     return getPref("engine." + e.key, e.defaultOn) === true;
   });
-  if (on.length === 0) {
-    on = ENGINES.filter(function (e) { return e.key === "scholar"; });
+  var all = on.concat(_customEngines());
+  if (all.length === 0) {
+    all = ENGINES.filter(function (e) { return e.key === "scholar"; });
   }
-  return on;
+  return all;
+}
+
+// Parse user-defined engines from the `custom` pref. Silently drops malformed
+// entries and rows missing a label or url (the settings pane saves partially
+// typed rows, which should not appear in the menu until complete).
+function _customEngines() {
+  var raw = getPref("custom", "");
+  if (!raw) return [];
+  var arr;
+  try { arr = JSON.parse(raw); } catch (e) { return []; }
+  if (!Array.isArray(arr)) return [];
+  return arr
+    .filter(function (c) {
+      return c && typeof c.label === "string" && typeof c.url === "string" &&
+             c.label.trim() && c.url.trim();
+    })
+    .map(function (c, i) {
+      return { key: "custom-" + i, label: c.label.trim(), url: c.url.trim() };
+    });
 }
 
 function _buildSearchUrl(engine, text) {

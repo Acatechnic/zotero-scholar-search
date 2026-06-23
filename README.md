@@ -1,8 +1,8 @@
 # Scholar Search for Zotero
 
 Right-click selected text in the Zotero PDF reader to search **Google Scholar**,
-**Web of Science**, **Google** or **PubMed** — and open the result in the
-browser of your choice.
+**Google**, **PubMed** — or any **custom search engine** you add — and open the
+result in the browser of your choice.
 
 A tiny, dependency-free Zotero 7 / 9 plugin.
 
@@ -14,9 +14,11 @@ A tiny, dependency-free Zotero 7 / 9 plugin.
 
 - **Right-click to search.** Select text in the PDF reader, right-click, and
   pick a search engine.
-- **Multiple search engines.** Enable any of Google Scholar, Web of Science,
-  Google and PubMed in Settings. Each enabled engine appears as its own menu
+- **Multiple search engines.** Enable any of Google Scholar, Google and PubMed
+  in Settings, and add your own. Each enabled engine appears as its own menu
   item.
+- **Custom engines.** Add any site that supports a search URL — put `{q}` where
+  the selected text should go (e.g. `https://www.semanticscholar.org/search?q={q}`).
 - **Choose your browser.** Open searches in Google Chrome, Safari, Firefox,
   Edge, Brave, Arc, or your system default — overriding the OS default the same
   way the original Chrome-only version did.
@@ -41,20 +43,21 @@ Zotero will keep the plugin up to date automatically.
 **Tools → Plugins → Scholar Search → ⚙ → Plugin Options**, or via Zotero
 **Settings → Scholar Search**:
 
-- **Search engines** — tick the engines you want to appear in the right-click
+- **Search engines** — tick the built-in engines you want in the right-click
   menu. One menu item is shown per enabled engine.
-- **Browser** — choose which browser opens searches. "System default" uses your
-  macOS default browser; any other choice overrides it. If the chosen browser
-  isn't installed, the system default is used instead.
+- **Custom search engines** — click **Add custom engine**, give it a name, and
+  enter a URL with `{q}` where the search text should go. Add as many as you
+  like; remove one with its **Remove** button.
 
 ## Notes & limitations
 
-- **Web of Science** is a session-based web app with no documented query URL.
-  The plugin makes a best-effort attempt to pre-fill the search; depending on
-  your institution's access it may simply open the Web of Science search page.
-- Advanced users can override any engine's URL without waiting for an update by
-  setting a hidden pref `extensions.scholar-search.url.<key>` (keys: `scholar`,
-  `wos`, `google`, `pubmed`) to a template containing `{q}`.
+- **Web of Science** is intentionally not a built-in: it's a session-based web
+  app with no public query URL, so a direct search link just opens an empty
+  page. If your institution provides a URL that pre-fills a query, add it as a
+  custom engine.
+- Advanced users can override a built-in engine's URL without waiting for an
+  update by setting a hidden pref `extensions.scholar-search.url.<key>` (keys:
+  `scholar`, `google`, `pubmed`) to a template containing `{q}`.
 
 ## Build from source
 
