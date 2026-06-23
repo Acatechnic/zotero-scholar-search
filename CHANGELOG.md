@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented here.
 
+## [2.2.1] — 2026-06-23
+
+### Fixed
+- Corrected the custom-engine help text in Settings. It previously displayed
+  literal `<b>` tags (an HTML formatting attempt that doesn't render in Zotero's
+  settings), which could be mistaken for part of the URL template. The example
+  is now plain `…?q={q}`.
+
 ## [2.2.0] — 2026-06-23
 
 ### Added

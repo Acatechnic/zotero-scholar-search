@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Scholar Search",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Right-click selected text in the Zotero PDF reader to search Google Scholar, Google, PubMed or your own custom engines — in the browser of your choice, on macOS, Windows and Linux.",
   "author": "Acatechnic",
   "homepage_url": "https://github.com/Acatechnic/zotero-scholar-search",
